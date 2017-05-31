@@ -1,13 +1,14 @@
-
+from bin import gpsutils
 from math import sqrt
 
-def collision_check(plane_gps,objects):
-    enu = []
-    for object in objects:
-        enu = gps2enu(plane_gps,object.location)
-        if(calc_dist(enu) < safety_dist + object.radius):
-            return True
-    return False
+def collision_check(plane_lla,object):
+    helper = gpsutils.GpsUtils()
+    safety_dist = 200
+    enu = helper.lla2enu(object.lla,plane_lla)
+    if(calc_dist(enu) < safety_dist + object.radius):
+        return True
+    else:
+        return False
 
 def calc_dist(enu):
     #arguments [east,north,up]

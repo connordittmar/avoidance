@@ -1,5 +1,4 @@
 class Obstacle(object):
-    __init__(self,location,radius):
-        self.location = location
+    def __init__(self,lla,radius):
+        self.lla = lla
         self.radius = radius
-        

@@ -36,7 +36,7 @@ class GpsUtils(object):
         return ecef
 
 
-    def enu2ecef(self,obj_enu,ref_lla):
+    def enu2ecef(self, obj_enu, ref_lla):
         # Converts object enu position with respect to a reference lat, long,
         # alt, into stand-alone ECEF coordinates
         phi = self.deg2rad(ref_lla[0])
@@ -53,6 +53,23 @@ class GpsUtils(object):
         z = cos(phi) * obj_y + sin(phi) * obj_z + ref_ecef[2]
         ecef = [x, y, z]
         return ecef
+
+    def lla2enu(self, obj_lla, ref_lla):
+        # Converts object ecef position to enu with respect to a reference point
+        phi = self.deg2rad(ref_lla[0])
+        lmda = self.deg2rad(ref_lla[1])
+        ref_ecef = self.lla2ecef(ref_lla)
+        obj_ecef = self.lla2ecef(obj_lla)
+
+        mat_x = obj_ecef[0] - ref_ecef[0]
+        mat_y = obj_ecef[1] - ref_ecef[1]
+        mat_z = obj_ecef[2] - ref_ecef[2]
+
+        x = -sin(lmda) * mat_x + cos(lmda) * mat_y
+        y = -sin(phi) * cos(lmda) * mat_x - sin(phi) * sin(lmda) * mat_y + cos(phi) * mat_z
+        z = cos(phi) * cos(lmda) * mat_x + cos(phi) * sin(lmda) * mat_y + sin(phi) * mat_z
+        enu = [x, y, z]
+        return enu
 
 
     def ecef2lla(self, tgt_ecef):

@@ -17,6 +17,15 @@ def calc_dist(enu):
     up = enu[2]
     calc_dist = sqrt(east**(2) + north**(2) + up**(2))
     return calc_dist
+    
+def diff_dist(obj1,obj2):
+    if len(obj1==2):
+        calc_dist = sqrt( abs(obj1[0]-obj2[0])**2 + abs(obj1[1]-obj2[1])**2 )
+    elif len(obj1==3):
+        calc_dist = sqrt( abs(obj1[0]-obj2[0])**2 + abs(obj1[1]-obj2[1])**2 + abs(obj1[2]-obj2[2])**2)
+    else:
+        raise "Input Must be two or three element float lists."
+
 
 def find_wp_enu(enu,apparent_radius,heading,look_ahead_dist):
     #finds next waypoint after risk of collision becomes apparent
@@ -38,7 +47,7 @@ def find_wp_enu(enu,apparent_radius,heading,look_ahead_dist):
             y=look_ahead_dist*cos(heading_temp)
             enu_look_ahead= [x , y]
             dr_dist=diff_distance(enu_look_ahead,enu)
-        if dr_dist > apparent_radius: 
+        if dr_dist > apparent_radius:
             break
     wp=enu_look_ahead
     return wp

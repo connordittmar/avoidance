@@ -15,31 +15,32 @@ class Avoid(object):
     def run(self):
         helper = self.helper
         plane_lla = self.plane_lla
-        obj_lla = self.obj_lla
         wp_lla = self.wp_lla
         safety_dist = self.safety_dist
-        obj_rad = self.obj_rad
         step_size = self.step_size
         obstacles = self.obstacles
 
         for elem in obstacles:
             elem.enu = helper.lla2enu(elem.lla,plane_lla)
-
-        if logic.check_for_danger(obstacles):
+        print "running..."
+        if logic.check_for_danger(obstacles,[0,0,0],safety_dist):
             waypoint_location = helper.lla2enu(wp_lla,plane_lla)
             wp = []
+            print "MADE IT ......"
             sim_location = [0.0,0.0,0.0]
-            while(logic.diff_dist(sim_location,obstacle_location)<(safety_dist+obj_rad)):
-                    wp.append(logic.find_wp(sim_location,obstacle_location,obj_rad,waypoint_location,step_size))
+            count = 0
+            while(logic.check_for_danger(obstacles,sim_location,safety_dist)):
+                    wp.append(logic.find_wp_multi(sim_location,obstacles,waypoint_location,step_size))
                     sim_location = wp[-1]
-                    if logic.diff_dist(sim_location,obstacle_location)>=(safety_dist+obj_rad):
+                    count += 1
+                    if count == 100:
                         break
-                        return wp
+            return wp
 
     def get_states(self,into):
         if into == 1:
-            enu = self.helper.lla2enu(self.obj_lla,self.plane_lla)
-            return enu
+            obstacles = self.obstacles
+            return obstacles
         elif into == 0:
             wp_enu = self.helper.lla2enu(self.wp_lla,self.plane_lla)
             return wp_enu

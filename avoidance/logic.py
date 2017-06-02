@@ -17,33 +17,32 @@ def check_for_obstacle(position_of_obstacle,obstacle_radius,point=[0,0,0]):
     else:
         return False
 
-def check_for_danger(obstacles):
+def check_for_danger(obstacles,point=[0,0,0],safety_radius=0):
     for obstacle in obstacles:   #enu coordinates of obstacles
-        if check_for_obstacle(obstacle.enu,obstacle.radius)==True:
+        if check_for_obstacle(obstacle.enu,obstacle.radius+safety_radius,point)==True:
             return True
     return False
 
-def distance_to_object(dr_point,position_obstacle): #finding closest obstacle to help decide which is most dangerous
-    for i in len(position_obstacle):
+def check_for_obstacles(obstacles,dr_point):
+    for obstacle in obstacles:
+        if check_for_obstacle(obstacle.enu,obstacle.radius,dr_point)==True:
+            return obstacle
 
-    return distance_object #used to compare objects and find which is most dangerous
-
-def closing_or_opening_to_object(dr_point,position_obstacle):
-
-    return proximity_change_to_object #2nd part of condition statement to find most dangerous object
-
-def find_dangerous_object(object_distance,)
-
-
-
-
-def find_wp_multi(current_position, position_of_obstacle,obstacle_radius,position_desired,step_size)
-
-    heading = atan2(position_desired[1]-current_position[1],position_desired[0]-current_position[0])
+def find_wp_multi(current_position, obstacles, waypoint, step_size):
+    heading = atan2(waypoint[1]-current_position[1],waypoint[0]-current_position[0])
     x = cos(heading)*step_size + current_position[0]
     y = sin(heading)*step_size + current_position[1]
     dr_point = [x, y, 0]
-
+    count = 0
+    while(check_for_danger(obstacles,dr_point)==True):
+        conflict = check_for_obstacles(obstacles,dr_point)
+        dr_point = find_wp(current_position,conflict.enu,conflict.radius,waypoint,step_size)
+        count += 1
+        if count == 100:
+            break
+    if diff_dist(current_position,waypoint)<step_size:
+        dr_point = waypoint
+    return dr_point
 
 
 

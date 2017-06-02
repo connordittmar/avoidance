@@ -5,14 +5,14 @@ from math import atan2, sin, cos, sqrt
 import numpy as np
 
 class Avoid(object):
-    def __init__(self,plane_lla,obj_lla,wp_lla,safety_dist,obj_rad,look_ahead_dist):
+    def __init__(self,plane_lla,obj_lla,wp_lla,safety_dist,obj_rad,step_size):
         self.plane_lla = plane_lla
         self.obj_lla = obj_lla
         self.wp_lla = wp_lla
         self.safety_dist = safety_dist
         self.obj_rad = obj_rad
-        self.look_ahead_dist = look_ahead_dist
         self.helper = gpsutils.GpsUtils()
+        self.step_size = step_size
 
     def run(self):
         helper = self.helper
@@ -21,27 +21,22 @@ class Avoid(object):
         wp_lla = self.wp_lla
         safety_dist = self.safety_dist
         obj_rad = self.obj_rad
-        look_ahead_dist = self.look_ahead_dist
+        step_size = self.step_size
 
-        enu = helper.lla2enu(obj_lla,plane_lla)
-        wp_enu = helper.lla2enu(wp_lla,plane_lla)
-        heading = atan2(wp_enu[1],wp_enu[0])
+        obstacle_location = helper.lla2enu(obj_lla,plane_lla)
+        waypoint_location = helper.lla2enu(wp_lla,plane_lla)
         wp = []
-        wp_sim_enu = wp_enu
-        if logic.collision_check(enu,obj_rad,safety_dist) == True:
-            sim_enu = [0.0,0.0,0.0]
-            print 'heading',heading * 180.0 / 3.14159
-            for i in range(60):
-                heading_sim = atan2(wp_sim_enu[1],wp_sim_enu[0])
-                look_ahead_enu = [sim_enu[0]+cos(heading_sim)*look_ahead_dist,sim_enu[1]+sin(heading_sim)*look_ahead_dist]
-                print "look ahead: ", look_ahead_enu
-                if logic.diff_dist(look_ahead_enu,np.subtract(enu,sim_enu)) < (safety_dist + obj_rad):
-                    wp.append(logic.find_wp_enu(np.subtract(enu,sim_enu),(obj_rad),heading_sim,look_ahead_dist))
-                    print "new waypoint:", wp[i]
-                    sim_enu = wp[i]
-                else:
+        counter = 0
+        sim_location = [0.0,0.0,0.0]
+        print obstacle_location
+        while(logic.diff_dist(sim_location,obstacle_location)<(safety_dist+obj_rad)):
+                wp.append(logic.find_wp(sim_location,obstacle_location,obj_rad,waypoint_location,step_size))
+                sim_location = wp[-1]
+                if logic.diff_dist(sim_location,obstacle_location)>=(safety_dist+obj_rad):
                     break
-                wp_sim_enu = np.subtract(wp_sim_enu,sim_enu)
+                counter +=1
+                if counter == 100:
+                    break
         return wp
 
     def get_states(self,into):

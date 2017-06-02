@@ -1,47 +1,35 @@
 from bin import gpsutils
 from math import sqrt, sin, cos, atan2
 
-def collision_check(enu_to_object,object_radius,safety_dist):
-    if(calc_dist(enu_to_object) < safety_dist + object_radius):
+def diff_dist(obj1,obj2):
+    if len(obj1)==2:
+        calc_dist = sqrt( abs(obj1[0]-obj2[0])**2 + abs(obj1[1]-obj2[1])**2 )
+        return calc_dist
+    elif len(obj1)==3:
+        calc_dist = sqrt( abs(obj1[0]-obj2[0])**2 + abs(obj1[1]-obj2[1])**2 + abs(obj1[2]-obj2[2])**2)
+        return calc_dist
+    else:
+        raise "Input Must be two or three element float lists."
+
+def check_for_obstacle(position_of_obstacle,obstacle_radius,point):
+    if diff_dist(position_of_obstacle,point) < obstacle_radius:
         return True
     else:
         return False
 
-def calc_dist(enu):
-    #arguments [east,north,up]
-    east = enu[0]
-    north = enu[1]
-    up = enu[2]
-    calc_dist = sqrt(east**(2) + north**(2) + up**(2))
-    return calc_dist
+def find_wp(current_position,position_of_obstacle,obstacle_radius,position_desired,step_size):
+    heading = atan2(position_desired[1]-current_position[1],position_desired[0]-current_position[0])
+    x = cos(heading)*step_size + current_position[0]
+    y = sin(heading)*step_size + current_position[1]
+    dr_point = [x, y, 0]
 
-def diff_dist(obj1,obj2):
-    if len(obj1)==2:
-        calc_dist = sqrt( abs(obj1[0]-obj2[0])**2 + abs(obj1[1]-obj2[1])**2 )
-    elif len(obj1)==3:
-        calc_dist = sqrt( abs(obj1[0]-obj2[0])**2 + abs(obj1[1]-obj2[1])**2 + abs(obj1[2]-obj2[2])**2)
-    else:
-        raise "Input Must be two or three element float lists."
-
-
-def find_wp_enu(enu,apparent_radius,heading,look_ahead_dist):
-    #finds next waypoint after risk of collision becomes apparent
-
-    for i in range(1,30): #i goes from 1 to 5
-        heading_temp=heading-(.088*i)
-        x=enu[0]+look_ahead_dist*cos(heading_temp) #heading must be in radians
-        y=enu[1]+look_ahead_dist*sin(heading_temp) #heading must be in radians
-        enu_look_ahead = [x, y, 0]
-        dr_dist=diff_dist(enu_look_ahead,enu) #finding the distance the projected point will be from the object
-        if dr_dist > apparent_radius: #if distance to object is greater than safty dist and object radius
-            break
+    while(check_for_obstacle(position_of_obstacle,obstacle_radius,dr_point)==True):
+        if atan2(position_of_obstacle[1]-current_position[1],position_of_obstacle[0]-current_position[0]) < heading:
+            heading += 0.085
+            dr_point = [cos(heading)*50+current_position[0], sin(heading)*50+current_position[1], 0]
         else:
-            heading_temp=heading+(.088*i) #checking other direction
-            x=enu[0]+look_ahead_dist*cos(heading_temp)
-            y=enu[1]+look_ahead_dist*sin(heading_temp)
-            enu_look_ahead = [x, y, 0]
-            dr_dist=diff_dist(enu_look_ahead,enu)
-        if dr_dist > apparent_radius:
-            break
-    wp=enu_look_ahead
-    return wp
+            heading -= 0.085
+            dr_point = [cos(heading)*50+current_position[0], sin(heading)*50+current_position[1], 0]
+    if diff_dist(current_position,position_desired)<step_size:
+        dr_point = position_desired
+    return dr_point

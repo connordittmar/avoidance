@@ -26,12 +26,17 @@ def check_for_danger(obstacles):
 def circle_proj(obstacles,time,dr_point,safety_heading):
     heading_to_dr_point= atan2(obstacles.enu[1]-dr_point[1],obstacles.enu[0]-dr_point[0])
     if heading_to_dr_point < safety_heading:
-            for i in range(1,5):
-                sym_enu=(obstacle.enu[0]+obstacles.speed[0]*(3.0/5.0*i),obstacle_enu[1]+obstacles.speed[1]*(3.0/5.0*i))
-                radius=obstacle.radius*(1.0+1.0/5.0*i)
-                if check_for_obstacle(sym_enu,radius,dr_point) == True:
-                    return True
-                    break
+        i=0.2
+        while(1):
+            sym_enu=(obstacle.enu[0]+obstacles.speed[0]*3.0*i,obstacle_enu[1]+obstacles.speed[1]*3.0*i)
+            radius=obstacle.radius*(1.0+i)
+            if check_for_obstacle(sym_enu,radius,dr_point) == True:
+                return True
+                break
+            if i==1.0
+                break
+            i=i+0.2
+
     return False
 
 def check_for_object_ext(obstacle,time,dr_point):
@@ -40,10 +45,6 @@ def check_for_object_ext(obstacle,time,dr_point):
     if cicle_proj(obstacles,dr_point,safety_heading) == True:
             return True
     return False
-
-def propogate_obstacle(obstical,time):
-    sim_enu=(obstacle.enu[0]+obstacles.speed[0]*time,obstacle.enu[1]+obstacles.speed[1]*time
-    return sim_enu
 
 def find_wp_multi(current_position, position_of_obstacle,obstacle_radius,position_desired,step_size):
 

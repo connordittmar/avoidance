@@ -1,0 +1,5 @@
+Requires: matplotlib
+
+TODO: convert flyaway variables to classes for readability
+-add comments and combine into single library for all usage cases
+-add integration for mavproxy

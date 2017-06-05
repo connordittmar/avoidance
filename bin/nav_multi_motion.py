@@ -1,6 +1,6 @@
 # Main Loop
 from avoidance import logic
-from bin import gpsutils
+from bin import gpsutils, display
 from math import atan2, sin, cos, sqrt
 import numpy as np
 
@@ -28,12 +28,18 @@ class Avoid(object):
             sim_location = [0.0,0.0,0.0]
             count = 0
             while(logic.check_for_danger(obstacles,sim_location,safety_dist)):
+                    [obstacle.update() for obstacle in obstacles]
                     wp.append(logic.find_wp_multi(sim_location,obstacles,waypoint_location,step_size))
                     sim_location = wp[-1]
                     count += 1
-                    if sim_location==waypoint_location or count == 100:
+                    if sim_location == waypoint_location or count == 100:
                         break
             return wp
+
+    def update_states(plane_lla,wp_lla,obstacles):
+        self.plane_lla = plane_lla
+        self.wp_lla = wp_lla
+        self.obstacles = obstacles
 
     def get_states(self,into):
         if into == 1:

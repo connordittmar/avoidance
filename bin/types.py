@@ -1,13 +1,17 @@
 class Obstacle(object):
-    def __init__(self,lla,radius,enu=[0,0,0],speed=[0,0,0]):
+    def __init__(self,lla,radius,enu=[0,0,0],speed=[0,0,0],dt=0):
         self.lla = lla
         self.radius = radius
         self.enu = enu
         self.speed = speed
+        self.dt = dt
 
-class MovingObstacle(Obstacle):
-    def update(self,dt):
-        self.enu = [self.enu[0]+self.speed[0]*dt,self.enu[1]+self.speed[1]*dt,0]
+    def update(self):
+        try:
+            self.enu = [self.enu[0]+self.speed[0]*self.dt,self.enu[1]+self.speed[1]*self.dt,0]
+        except:
+            print "not a moving object, speed = ", self.speed
+            pass
 
 class AirStates(object):
     def __init__(self,plane_telemetry,object):

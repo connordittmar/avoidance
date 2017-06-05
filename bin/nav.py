@@ -27,7 +27,6 @@ class Avoid(object):
         waypoint_location = helper.lla2enu(wp_lla,plane_lla)
         wp = []
         sim_location = [0.0,0.0,0.0]
-        print obstacle_location
         while(logic.diff_dist(sim_location,obstacle_location)<(safety_dist+obj_rad)):
                 wp.append(logic.find_wp(sim_location,obstacle_location,obj_rad,waypoint_location,step_size))
                 sim_location = wp[-1]

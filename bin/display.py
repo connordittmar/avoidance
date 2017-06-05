@@ -30,14 +30,10 @@ def create_plot(path,obstacle_enu,obstacle_radius,app_radius,wp_enu):
     patches.append(circle2)
     # add a line
     path = np.array(path)
-    print path
     x = path[:,0].tolist()
     x = [round(elem,2) for elem in x]
-    print x
     y = path[:,1].tolist()
     y = [round(elem,2) for elem in y]
-    print type(x)
-    print y
     plt.plot(x,y,'ro')
     e = wp_enu[0]
     o = wp_enu[1]
@@ -73,14 +69,10 @@ def create_plot_multi(path,obstacles,safety_dist,wp_enu):
         patches.append(circle2)
     # add a line
     path = np.array(path)
-    print path
     x = path[:,0].tolist()
     x = [round(elem,2) for elem in x]
-    print x
     y = path[:,1].tolist()
     y = [round(elem,2) for elem in y]
-    print type(x)
-    print y
     plt.plot(x,y,'ro')
     e = wp_enu[0]
     o = wp_enu[1]

@@ -44,8 +44,6 @@ def find_wp_multi(current_position, obstacles, waypoint, step_size):
         dr_point = waypoint
     return dr_point
 
-
-
 def find_wp(current_position,position_of_obstacle,obstacle_radius,position_desired,step_size):
     heading = atan2(position_desired[1]-current_position[1],position_desired[0]-current_position[0])
     x = cos(heading)*step_size + current_position[0]

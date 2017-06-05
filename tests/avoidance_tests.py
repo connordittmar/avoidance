@@ -38,5 +38,4 @@ def test_wps_multi():
     wp_enu = avoider.get_states(0)
     display.create_plot_multi(wps,obstacles,safety_dist,wp_enu)
 
-
 test_wps_multi()

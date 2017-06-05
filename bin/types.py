@@ -4,6 +4,11 @@ class Obstacle(object):
         self.radius = radius
         self.enu = enu
         self.speed = speed
+
+class MovingObstacle(Obstacle):
+    def update(self,dt):
+        self.enu = [self.enu[0]+self.speed[0]*dt,self.enu[1]+self.speed[1]*dt,0]
+
 class AirStates(object):
     def __init__(self,plane_telemetry,object):
         self.plane_telemetry = plane_telemetry
